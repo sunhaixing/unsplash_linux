@@ -1,18 +1,18 @@
 package main
 
 import (
-	"os"
-	"log"
-	"io"
-	"net/http"
-	"strings"
 	"bytes"
+	"fmt"
+	"io"
 	"io/ioutil"
-	"time"
+	"log"
+	"net/http"
+	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
-	"fmt"
-	"os/exec"
+	"strings"
+	"time"
 )
 
 func mkWorkDir() (string, string, error) {
@@ -54,11 +54,12 @@ func backupOldFile(wd string, od string) {
 }
 
 func getImg(url string, fn string) error {
-	out , err := os.Create(fn)
+	out, err := os.Create(fn)
 	if err != nil {
 		return err
 	}
 	defer out.Close()
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return err
@@ -80,5 +81,5 @@ func main() {
 	backupOldFile(workdir, olddir)
 	newfilename := workdir + fmt.Sprintf("%d", time.Now().Unix()) + ".jpg"
 	getImg("https://source.unsplash.com/1280x1024", newfilename)
-	exec.Command("gsettings", "set", "org.gnome.desktop.background", "picture-uri", "file://" + newfilename).Run()
+	exec.Command("gsettings", "set", "org.gnome.desktop.background", "picture-uri", "file://"+newfilename).Run()
 }
